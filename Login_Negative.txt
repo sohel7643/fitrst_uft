@@ -1,0 +1,53 @@
+'****************************************************
+'Script Name: Login_Negative_Para
+'Author: Kh Rakib
+'Date: 11/20/2021
+'****************************************************
+'Read Data from Data Table
+Dim useid,pw,nRow
+
+nRow=Datatable.GetSheet("Global").GetRowCount
+'Loop to real all data
+For i = 1 To nRow	
+	Datatable.SetCurrentRow(i)
+	useid=DataTable.Value("Userid","Global")
+	pw=DataTable.Value("Password","Global")
+
+
+'Close all IE
+SystemUtil.CloseProcessByName "iexplore.exe"
+'Open IE and Enter URL
+SystemUtil.Run "iexplore.exe","http://127.0.0.1:1080/WebTours/index.htm"
+Wait 2
+Browser("Web Tours").Page("Web Tours").Frame("navbar").WebEdit("username").Set useid
+Browser("Web Tours").Page("Web Tours").Frame("navbar").WebEdit("password").Set pw
+Wait 2
+Browser("Web Tours").Page("Web Tours").Frame("navbar").Image("Login").Click
+Wait 2
+
+'' If sign off not preset report fail
+
+If Browser("Web Tours").Page("Web Tours").Frame("navbar").Image("SignOff Button").Exist(10) Then
+	''Positive Block/Data
+	Datatable.Value("Status","Global")="Pass"
+	Reporter.ReportEvent micPass,"Login Process Is: ","Successful"
+	Browser("Web Tours").Page("Web Tours").Frame("navbar").Image("SignOff Button").Click
+	Browser("Web Tours").CloseAllTabs
+	
+	Else
+	'Negative Block/Data
+	Datatable.Value("Status","Global")="Fail"
+	Reporter.ReportEvent micFail ,"Login Process Is: ","Unsuccessful"
+End If
+
+
+
+
+Next
+
+
+'If signoff.exist(10) Then
+'		"Pass"
+'	Else
+'		"fail"
+'End If
